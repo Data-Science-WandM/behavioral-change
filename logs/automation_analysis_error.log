@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/usr/lib64/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib64/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/sciclone/data10/iahewababarand/behavior_change/src/index.py", line 46, in <module>
+    main()
+  File "/sciclone/data10/iahewababarand/behavior_change/src/index.py", line 37, in main
+    fox8_main(cfg)
+  File "/sciclone/data10/iahewababarand/behavior_change/src/fox8_analyzer.py", line 82, in main
+    records = read_all_users(cfg)
+  File "/sciclone/data10/iahewababarand/behavior_change/src/fox8_analyzer.py", line 19, in read_all_users
+    with gzip.open(file_path, 'rt', encoding='utf-8') as f:
+NameError: name 'file_path' is not defined
