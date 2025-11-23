@@ -1,0 +1,3 @@
+coordination detection results
+{'bot': {'precision': 0.8682008368200836, 'recall': 0.8409321175278622, 'f1-score': 0.8543489449305198, 'support': 987.0}, 'human': {'precision': 0.8457760314341847, 'recall': 0.8723404255319149, 'f1-score': 0.8588528678304239, 'support': 987.0}, 'accuracy': 0.8566362715298885, 'macro avg': {'precision': 0.8569884341271341, 'recall': 0.8566362715298885, 'f1-score': 0.8566009063804718, 'support': 1974.0}, 'weighted avg': {'precision': 0.8569884341271341, 'recall': 0.8566362715298885, 'f1-score': 0.8566009063804719, 'support': 1974.0}}
+Best F1: 0.8566009063804718 | min_class_size: 987

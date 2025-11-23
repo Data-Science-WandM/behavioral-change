@@ -254,4 +254,5 @@ def calculate_changes_for_all(records, comparison_method, change_calculation_met
         r2["action_changes_list"] = action_changes
         r2["content_changes_list"] = content_changes
         out.append(r2)
+        
     return out

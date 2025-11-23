@@ -5,6 +5,7 @@ from pathlib import Path
 from .fox8_analyzer import main as fox8_main
 from .infoOps_analyzer import main as infoOps_main
 from .retraining_analyzer import main as retraining_main
+from .user_analyzer import main as user_analyzer_main
 
 def load_config(path) -> dict:
     path = Path(path)
@@ -22,6 +23,7 @@ def main():
             "fox8_analyzer",
             "infoOps_analyzer",
             "retraining_analyzer",
+            "user_analyzer",
         ],
     )
     parser.add_argument(
@@ -41,6 +43,9 @@ def main():
 
     elif args.task == "retraining_analyzer":
         retraining_main(cfg)
+
+    elif args.task == "user_analyzer":
+        user_analyzer_main(cfg)
 
 if __name__ == "__main__":
     main()

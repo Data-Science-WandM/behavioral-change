@@ -1,21 +1,18 @@
-# src:
-#   - astroturf
-#   - kevin_feedback
-#   - botwiki
-#   - zoher-organization
-#   - cresci-17
-#   - rtbust
-#   - stock
-#   - gilani-17
-#   - midterm-2018
-#   - josh_political
-#   - pronbots
-#   - varol-icwsm
-#   - gregory_purchased
-#   - verified
-
 src:
+  - astroturf
   - kevin_feedback
+  - botwiki
+  - zoher-organization
+  - cresci-17
+  - rtbust
+  - stock
+  - gilani-17
+  - midterm-2018
+  - josh_political
+  - pronbots
+  - varol-icwsm
+  - gregory_purchased
+  - verified
 
 retraining_dataset : "dataset/retraining_data"
 
