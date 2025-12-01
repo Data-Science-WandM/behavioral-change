@@ -84,20 +84,17 @@ While segmentation is based on action strings, for each action segment, we also 
   </figcaption>
 </figure>
 
-After a user's behavior is partitioned into sequential segments, we must select different segments to be compared for measuring how behavior evolves over time. 
-We explored two selection methods.
-Consider a sequence of four segments $s_1$, $s_2$, $s_3$, and $s_4$ for illustration. In **adjacent** selection, we compare consecutive segments, e.g., ($s_1$ vs. $s_2$), ($s_2$ vs. $s_3$), and ($s_3$ vs. $s_4$). This method is sensitive to short-term fluctuations in behaviors. In **cumulative** selection, we compare each segment with the concatenation of all prior segments, e.g., ($s_1$ vs. $s_2$), ($s_1 s_2$ vs. $s_3$), and ($s_1$ $s_2$ $s_3$ vs. $s_4$). This method captures how present behavior diverges from historical ones. 
+After a user's behavior is partitioned into sequential segments, we must select different segments to be compared for measuring how behavior evolves over time. We explored two selection methods. Consider a sequence of four segments $s_1$, $s_2$, $s_3$, and $s_4$ for illustration. In **adjacent** selection, we compare consecutive segments, e.g., $(s_1 \text{ vs. } s_2)$, $(s_2 \text{ vs. } s_3)$, and $(s_3 \text{ vs. } s_4)$. This method is sensitive to short-term fluctuations in behaviors. In **cumulative** selection, we compare each segment with the concatenation of all prior segments, e.g., $(s_1 \text{ vs. } s_2)$, $(s_1 s_2 \text{ vs. } s_3)$, and $(s_1 s_2 s_3 \text{ vs. } s_4)$. This method captures how present behavior diverges from historical ones.
 
-We measure how an account's behavior evolves over time by computing the differences between selected pairs of segments. We propose two methods to measure these differences. For **cosine distance**, we convert two selected segments into term frequency vectors $v_1$, $v_2$ and then compute their cosine distance (1 - cos($v_1$, $v_2$)). For *compression* distance, we employ the **Normalized Compression Distance (NCD)**. 
-Let $C(\cdot)$ denote the compressed length (in bytes) of a string under a given 
-compressor (e.g., zlib). The NCD between $s_1$ and $s_2$ is defined as 
+We measure how an account's behavior evolves over time by computing the differences between selected pairs of segments. We propose two methods to measure these differences. For **cosine** distance, we convert two selected segments into term frequency vectors $v_1, v_2$ and then compute their cosine distance $1 - \cos(v_1, v_2)$. For *compression* distance, we employ the **Normalized Compression Distance (NCD)**. Let $C(\cdot)$ denote the compressed length (in bytes) of a string under a given compressor (e.g., zlib). The NCD between $s_1$ and $s_2$ is defined as:
 
-NCD($s_1,s_2$) ) = ( C(s₁s₂) − min(C(s₁), C(s₂)) ) / max(C(s₁), C(s₂)) 
+$$
+\text{NCD}(s_1, s_2) =
+\frac{C(s_1 s_2) - \min\{C(s_1), C(s_2)\}}
+     {\max\{C(s_1), C(s_2)\}}
+$$
 
-where $C(s_1 s_2)$ denotes the compressed length of the concatenation of 
-$s_1$ and $s_2$. Intuitively, NCD measures the degree to which the two segments share compressible patterns. 
-Both distance measures are defined in the unit interval. 
-%An NCD value close to zero indicates low distance, while one indicates high distance. 
+where $C(s_1 s_2)$ denotes the compressed length of the concatenation of $s_1$ and $s_2$. Intuitively, NCD measures the degree to which the two segments share compressible patterns. Both distance measures are defined in the unit interval.
 
 
 ## Usage/Examples
