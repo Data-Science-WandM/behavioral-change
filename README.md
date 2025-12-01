@@ -2,7 +2,7 @@
 
 Social media accounts engaging in online manipulation can change their behaviors for re-purposing or to evade detection. Here we investigate the degree to which change in behavior can serve as a signal for identifying automated or coordinated accounts.
 
-The [BLOC](https://github.com/anwala/bloc) (Behavioral Languages for Online Characterization) framework provides formal languages that can be used to represent the behaviors of social media accounts. The BLOC strings in Figure 1 illustrate the behavioral patterns exhibited by different accounts. By analyzing these patterns and how they change over time, we can differentiate between authentic, and inauthentic behaviors. 
+The [BLOC](https://github.com/anwala/bloc) (Behavioral Languages for Online Characterization) framework provides formal languages that can be used to represent the behaviors of social media accounts. The BLOC representations in Figure 1 illustrate the behavioral patterns exhibited by different accounts. By analyzing these patterns and how they change over time, we can differentiate between authentic, and inauthentic behaviors. 
 
 <div style="text-align:center;">
 
@@ -69,7 +69,7 @@ In segmentation by **pauses**, a new segment starts after any period of inactivi
 In segmentation by **week**, each segment represents activities that occurred in the same week. 
 These two approaches result in BLOC segments of different lengths. 
 Alternatively, segmentation by **sets-of-k** partitions the string into sets of equal length $k$. 
-%And unlike the previous two methods, this one produces segments of BLOC strings of the same length.
+And unlike the previous two methods, this one produces segments of BLOC strings of the same length.
 While segmentation is based on action strings, for each action segment, we also create a content segment that includes the corresponding content symbols. 
 
 <figure style="text-align:center;">
