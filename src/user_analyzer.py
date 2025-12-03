@@ -4,15 +4,10 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 
-from bloc.util import get_default_symbols, getDictFromJson, genericErrorInfo
+from bloc.util import get_default_symbols
 from .utils import calculate_changes_for_all, segment_bloc_for_all, generate_bloc_for_all
 
 def plot_histogram(ax, data, alphabet, bin_edges):
-    """
-    Draw histogram with actor-based colors and hatch for content plots.
-    NOTE: this function no longer sets ax.set_ylabel so we can control
-    y-label only for the first column in the caller.
-    """
     color = '#2723eb'
     hatch_color = 'white'
 
@@ -131,6 +126,5 @@ def main(cfg):
     records = generate_bloc_for_all(records, gen_bloc_params, all_bloc_symbols)
     records = segment_bloc_for_all(records, segmentation_type, n_gram)
     records = calculate_changes_for_all(records, comparison_method, distance_metric)
-    print(records[0]["action_changes_list"])
-    print(records[0]["content_changes_list"])
+
     plot_changes_distribution(records[0])

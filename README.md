@@ -130,20 +130,34 @@ The behavioral change models were evaluated on two tasks: detecting automated ac
 
 As summarized in Figure 3 and described in Section "Measuring Change in the Behaviors of Social Media Accounts", account activity was represented using BLOC and analyzed through two behavioral change distributions: the distribution of action behavioral distances and the distribution of content behavioral distances. Each distribution was constructed using 10 bins, resulting in a total of 20 behavioral change features per account. These features were used to train and evaluate the machine learning models for each task.
 
-The experiments described above have already been completed. The commands below allow the tasks to be reproduced. Each command runs one task end-to-end and stores the evaluation results in the logs/ directory.
+The experiments described above have already been completed. The commands below allow the tasks to be reproduced. Each command runs one task end-to-end and stores the evaluation results in the logs/ directory. Additionally, you can select the segmentation method, segment-selection strategy, and distance measure in the relevant configuration file for each task. You must also add the datasets under the dataset/ folder. The required format for the datasets is provided under each corresponding task, and each dataset must include the list of userIds associated with the accounts being evaluated.
 
 ### Automation experiments
 ```bash
 python -m src.index --task retraining_analyzer --config config/retraining_config.yaml > logs/retraining_analysis.txt
 ```
+- dataset
+  - retraining_data
+    - astroturf
+      - tweets.jsons.gz
+      - userIds.txt
+    - kevin_feedback
+    - botwiki
 
 ### Fox8 coordination analysis
 ```bash
 python -m src.index --task fox8_analyzer --config config/fox8_config.yaml > logs/fox8.txt
 ```
+- dataset
+  - fox8_23_dataset.ndjson.gz
 
 ### Information Operations (InfoOps) coordination analysis
 ```bash
 python -m src.index --task infoOps_analyzer --config config/infoOps_config.yaml > logs/infoOps.txt
 ```
-
+- dataset
+  - YYYY_MM
+    - campaign_1
+      - DriversControl/control_driver_users.csv
+      - driver_tweets.csv.gz
+    - campaign_2 

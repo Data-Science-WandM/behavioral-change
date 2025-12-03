@@ -1,34 +1,10 @@
 import csv
+import zlib #https://docs.python.org/3/library/zlib.html
+
 from bloc.util import genericErrorInfo
-import json
-import gzip
-import os
-import csv
-import yaml
-from bloc.util import getDictFromJson
-from random import shuffle
-import json
-import math
-from scipy.stats import entropy
 from datetime import datetime
-from datetime import timedelta
-import statistics
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.model_selection import StratifiedKFold, train_test_split
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, f1_score, classification_report
-import seaborn as sns
-import pandas as pd
-from scipy.stats import wasserstein_distance
+import matplotlib.font_manager as font_manager
 
-from sklearn.model_selection import cross_val_score, train_test_split
-from sklearn.svm import SVC
-from sklearn.metrics import classification_report
-
-from bloc.util import get_default_symbols
 from bloc.generator import add_bloc_sequences
 from bloc.util import get_bloc_variant_tf_matrix
 from bloc.util import get_bloc_variant_tf_matrix
@@ -36,9 +12,6 @@ from bloc.util import conv_tf_matrix_to_json_compliant
 from bloc.util import cosine_sim
 from bloc.util import genericErrorInfo
 
-import matplotlib.font_manager as font_manager
-import shutil
-import zlib #https://docs.python.org/3/library/zlib.html
 
 def parse_segments(segmented_bloc_string):
     """Split each field in the dictionary into a list of segments."""
@@ -71,14 +44,9 @@ def cal_cosine_sim(seg1, seg2):
         cur_prev_tf_mat = conv_tf_matrix_to_json_compliant(cur_prev_tf_mat)
         dist = 1 - cosine_sim( [cur_prev_tf_mat[matrix_form][0]['tf_vector']], [cur_prev_tf_mat[matrix_form][1]['tf_vector']] ) 
     except Exception as e:
-        # print('seg1', seg1)
-        # print('seg2', seg2)
-        # for key in cur_prev_tf_mat:
-        #     print(key)
         print("error", genericErrorInfo(e))
         dist = 0.0  
     return dist
-
 
 def compressed_size(s):
     return len(zlib.compress(s.encode("utf-8")))
@@ -147,7 +115,6 @@ def cumulative_previous_changes(segments, method):
 
     return changes_list
 
-
 def parse_time(t):
     return datetime.strptime(t, "%a %b %d %H:%M:%S %z %Y")
 
@@ -177,7 +144,6 @@ def update_user_class(dataset_name, user_class):
         updated_user_class = 'human'
     return updated_user_class
 
-
 def generate_bloc_for_all(records, gen_bloc_params, all_bloc_symbols):
 
     out = []
@@ -191,7 +157,6 @@ def generate_bloc_for_all(records, gen_bloc_params, all_bloc_symbols):
         r2["u_bloc"] = u_bloc
         out.append(r2)
     return out
-
 
 def segment_bloc_for_all(records, segmentation_type, n_gram):
     out = []
@@ -223,7 +188,6 @@ def segment_bloc_for_all(records, segmentation_type, n_gram):
         r2["segmented_bloc_string"] = segmented
         out.append(r2)
     return out
-
 
 def calculate_changes_for_all(records, comparison_method, change_calculation_method):
     out = []

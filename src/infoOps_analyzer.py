@@ -23,6 +23,45 @@ from .utils import calculate_changes_for_all, segment_bloc_for_all, generate_blo
 from .classifier import classifier
 from multiprocessing import Pool
 
+name_mapper = {
+    '2018_10/iranian' : 'Iran_1',
+    '2019_01/bangladesh_201901_1' : 'Bangladesh',
+    '2019_01/iran_201901_X/iran_201901_1' : 'Iran_2',
+    '2019_01/russia_201901_1' : 'Russia_1',
+    '2019_01/venezuela_201901_1' : 'Venezuela_1',
+    '2019_01/venezuela_201901_2' : 'Venezuela_2',
+    '2019_06/catalonia_201906_1' : 'Catalonia',
+    '2019_06/iran_201906_1' : 'Iran_3',
+    '2019_06/iran_201906_2' : 'Iran_4',
+    '2019_06/iran_201906_3' : 'Iran_5',
+    '2019_06/venezuela_201906_1' : 'Venezuela_3',
+    '2019_08/china_082019_1' : 'China_1',
+    '2019_08/china_082019_2' : 'China_2',
+    '2019_08/ecuador_082019_1' : 'Ecuador',
+    '2019_08/egypt_uae_082019_1' : 'Egypt_UAE',
+    '2019_08/spain_082019_1' : 'Spain',
+    '2019_08/uae_082019_1' : 'UAE',
+    '2020_03/ghana_nigeria_032020' : 'Ghana_Nigeria',
+    '2020_08/qatar_082020' : 'Qatar',
+    '2020_09/ira_092020' : 'Russia_2',
+    '2020_09/iran_092020' : 'Iran_6',
+    '2020_09/thailand_092020' : 'Thailand',
+    '2020_12/GRU_202012' : 'Russia_3',
+    '2020_12/IRA_202012' : 'Russia_4',
+    '2020_12/armenia_202012' : 'Armenia',
+    '2020_12/iran_202012' : 'Iran_7',
+    '2021_12/CNCC_0621_YYYY/CNCC_0621_2021' : 'China_3',
+    '2021_12/CNHU_0621_YYYY/CNHU_0621_2020' : 'China_5',
+    '2021_12/CNHU_0621_YYYY/CNHU_0621_2021' : 'China_4',
+    '2021_12/MX_0621_YYYY/MX_0621_2019' : 'Mexico_1',
+    '2021_12/Venezuela_0621_YYYY/Venezuela_0621_2020' : 'Venezuela_5',
+    '2021_12/Venezuela_0621_YYYY/Venezuela_0621_2021' : 'Venezuela_4',
+    '2021_12/uganda_0621_YYYY/uganda_0621_2019' : 'Uganda_1',
+    '2021_12/uganda_0621_YYYY/uganda_0621_2020' : 'Uganda_2'
+}
+
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
 
 def parallelProxy(job):
     
@@ -33,27 +72,6 @@ def parallelProxy(job):
             print(job['print'])
 
     return {'input': job, 'output': output, 'misc': job['misc']}
-
-'''
-    jobsLst: {
-                'func': function,
-                'args': {functionArgName0: val0,... functionArgNamen: valn}
-                'misc': ''
-             }
-    
-    usage example:
-    jobsLst = []
-    keywords = {'uri': 'http://www.odu.edu'}
-    jobsLst.append( {'func': getDedupKeyForURI, 'args': keywords} )
-
-    keywords = {'uri': 'http://www.cnn.com'}
-    jobsLst.append( {'func': getDedupKeyForURI, 'args': keywords} )
-
-    keywords = {'uri': 'http://www.arsenal.com'}
-    jobsLst.append( {'func': getDedupKeyForURI, 'args': keywords} )
-
-    print( parallelTask(jobsLst) )
-'''
 
 def parallelTask(jobsLst, threadCount=5):
 
@@ -293,45 +311,6 @@ def get_bloc_lite_twt_frm_full_twt(tweet):
         #'''
     
     return payload
-
-name_mapper = {
-    '2018_10/iranian' : 'Iran_1',
-    '2019_01/bangladesh_201901_1' : 'Bangladesh',
-    '2019_01/iran_201901_X/iran_201901_1' : 'Iran_2',
-    '2019_01/russia_201901_1' : 'Russia_1',
-    '2019_01/venezuela_201901_1' : 'Venezuela_1',
-    '2019_01/venezuela_201901_2' : 'Venezuela_2',
-    '2019_06/catalonia_201906_1' : 'Catalonia',
-    '2019_06/iran_201906_1' : 'Iran_3',
-    '2019_06/iran_201906_2' : 'Iran_4',
-    '2019_06/iran_201906_3' : 'Iran_5',
-    '2019_06/venezuela_201906_1' : 'Venezuela_3',
-    '2019_08/china_082019_1' : 'China_1',
-    '2019_08/china_082019_2' : 'China_2',
-    '2019_08/ecuador_082019_1' : 'Ecuador',
-    '2019_08/egypt_uae_082019_1' : 'Egypt_UAE',
-    '2019_08/spain_082019_1' : 'Spain',
-    '2019_08/uae_082019_1' : 'UAE',
-    '2020_03/ghana_nigeria_032020' : 'Ghana_Nigeria',
-    '2020_08/qatar_082020' : 'Qatar',
-    '2020_09/ira_092020' : 'Russia_2',
-    '2020_09/iran_092020' : 'Iran_6',
-    '2020_09/thailand_092020' : 'Thailand',
-    '2020_12/GRU_202012' : 'Russia_3',
-    '2020_12/IRA_202012' : 'Russia_4',
-    '2020_12/armenia_202012' : 'Armenia',
-    '2020_12/iran_202012' : 'Iran_7',
-    '2021_12/CNCC_0621_YYYY/CNCC_0621_2021' : 'China_3',
-    '2021_12/CNHU_0621_YYYY/CNHU_0621_2020' : 'China_5',
-    '2021_12/CNHU_0621_YYYY/CNHU_0621_2021' : 'China_4',
-    '2021_12/MX_0621_YYYY/MX_0621_2019' : 'Mexico_1',
-    '2021_12/Venezuela_0621_YYYY/Venezuela_0621_2020' : 'Venezuela_5',
-    '2021_12/Venezuela_0621_YYYY/Venezuela_0621_2021' : 'Venezuela_4',
-    '2021_12/uganda_0621_YYYY/uganda_0621_2019' : 'Uganda_1',
-    '2021_12/uganda_0621_YYYY/uganda_0621_2020' : 'Uganda_2'
-}
-
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
 def convert_to_ISO_time(date_str):
     return datetime.strptime(date_str, "%a %b %d %H:%M:%S %z %Y")
