@@ -73,7 +73,8 @@ def classifier(df, task):
         best_score = -1.0
         best_y = None
 
-        for k in range(1, 11):
+        max_k = min(10, max(1, X.shape[0] - 1))
+        for k in range(1, max_k):
             clf = KNeighborsClassifier(n_neighbors=k, metric='cosine', algorithm='brute')
             y_pred = cross_val_predict(clf, X, y, cv=loo, n_jobs=-1, method='predict')
             macro_f1 = f1_score(y, y_pred, average='macro')  # global macro-F1 across all LOOCV folds

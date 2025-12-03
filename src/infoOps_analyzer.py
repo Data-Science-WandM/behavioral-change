@@ -1,29 +1,18 @@
-import json
 import gzip
-import sys
 import os
 import csv
-import yaml
-import os
 import random
+import copy
+import re
 
 from datetime import datetime, timedelta
 from bloc.util import getDictFromJson
-from random import shuffle
-from scipy.stats import wasserstein_distance
-from collections import Counter
-import numpy as np
-import seaborn as sns
+from bloc.util  import genericErrorInfo
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from bloc.util import get_default_symbols
 from bloc.generator import add_bloc_sequences
 
-from info_ops_tk.util import get_bloc_lite_twt_frm_full_twt
-from info_ops_tk.util import get_bloc_lite_twt
-from info_ops_tk.util import parallelTask
-from info_ops_tk.util import genericErrorInfo
 from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import train_test_split
@@ -32,6 +21,278 @@ from sklearn.metrics import accuracy_score, f1_score, classification_report
 
 from .utils import calculate_changes_for_all, segment_bloc_for_all, generate_bloc_for_all
 from .classifier import classifier
+from multiprocessing import Pool
+
+
+def parallelProxy(job):
+    
+    output = job['func'](**job['args'])
+
+    if( 'print' in job ):
+        if( len(job['print']) != 0 ):
+            print(job['print'])
+
+    return {'input': job, 'output': output, 'misc': job['misc']}
+
+'''
+    jobsLst: {
+                'func': function,
+                'args': {functionArgName0: val0,... functionArgNamen: valn}
+                'misc': ''
+             }
+    
+    usage example:
+    jobsLst = []
+    keywords = {'uri': 'http://www.odu.edu'}
+    jobsLst.append( {'func': getDedupKeyForURI, 'args': keywords} )
+
+    keywords = {'uri': 'http://www.cnn.com'}
+    jobsLst.append( {'func': getDedupKeyForURI, 'args': keywords} )
+
+    keywords = {'uri': 'http://www.arsenal.com'}
+    jobsLst.append( {'func': getDedupKeyForURI, 'args': keywords} )
+
+    print( parallelTask(jobsLst) )
+'''
+
+def parallelTask(jobsLst, threadCount=5):
+
+    if( len(jobsLst) == 0 ):
+        return []
+
+    if( threadCount < 2 ):
+        threadCount = 2
+
+    try:
+        workers = Pool(threadCount)
+        resLst = workers.map(parallelProxy, jobsLst)
+
+        workers.close()
+        workers.join()
+    except:
+        genericErrorInfo( '\terror func: ' + str(jobsLst[0]['func']) )
+        return []
+
+    return resLst
+
+def fix_id(tid):
+    
+    tid = str(tid)
+    indx = tid.find('.')
+    
+    if( indx == -1 ):
+        return tid
+
+    tid = str(int(float(tid)))
+    return tid
+
+def get_bloc_lite_twt(csv_entry, header):
+    
+    '''
+        > transferred to tweet
+        id
+
+        > account_language
+        > follower_count
+        > following_count
+        > hashtags
+        > in_reply_to_tweetid
+        > in_reply_to_userid
+        > latitude
+        > longitude
+        > tweet_client_name
+        > tweet_text
+        > tweet_time
+        > tweetid
+        > urls
+        > user_display_name
+        > user_mentions
+        > user_profile_description
+        > user_profile_url
+        > user_reported_location
+        > user_screen_name
+        > userid
+        account_creation_date
+        is_retweet
+        like_count
+        quote_count
+        quoted_tweet_tweetid
+        reply_count
+        retweet_count
+        retweet_tweetid
+        retweet_userid
+        tweet_language
+    '''
+    
+    tweet = {}
+    user = {}
+    for i in range( len(csv_entry) ):
+        tweet[ header[i] ] = csv_entry[i].strip()
+
+
+    if( 'tweetid' not in tweet ):
+        return {}
+
+    tweet['userid'] = fix_id(tweet['userid'])
+
+    user['id'] = tweet['userid']
+    user['name'] = tweet['user_display_name']
+    user['screen_name'] = tweet['user_screen_name']
+    
+    user['url'] = tweet['user_profile_url']
+    user['lang'] = tweet['account_language']
+    user['location'] = tweet['user_reported_location']
+    user['description'] = tweet['user_profile_description']
+    
+    user['friends_count'] = int(tweet['following_count'])
+    user['followers_count'] = int(tweet['follower_count'])
+    #coord = None if tweet['latitude'] == 'absent' else { 'coordinates': [int(tweet['longitude']), int(tweet['latitude'])] }
+    
+
+    entities = {'urls': [], 'hashtags': [], 'user_mentions': []}
+    
+    '''
+    #I discovered that twitter parsing of entities was not reliable, hence manual parsing of tweet text with regex
+    for opt in ['urls', 'hashtags', 'user_mentions']:
+        tweet[opt] = [v.strip() for v in re.split(r"[',\[\]]+", tweet[opt]) if v.strip() != '']
+    '''
+    
+    tweet['tweet_text'] = re.sub(r'&amp;#\w+;', '', tweet['tweet_text'])
+    
+    given_tweet_urls = [v.strip() for v in re.split(r"[',\[\]]+", tweet['urls']) if v.strip() != '']
+    calc_tweet_urls = [(l.group(), l.start(), l.end()) for l in re.finditer(r'http\S+', tweet['tweet_text'])]
+    
+    for i in range(len(calc_tweet_urls)):
+        
+        u, st_indx, en_indx = calc_tweet_urls[i]
+        if( i < len(given_tweet_urls) ):
+            entities['urls'].append({ 'expanded_url': given_tweet_urls[i], 'indices': [st_indx, en_indx], 'url': u })
+        else:
+            entities['urls'].append({ 'expanded_url': u, 'indices': [st_indx, en_indx] })
+        
+
+    for h in re.finditer(r'#\S+', tweet['tweet_text']):
+        if( h.group()[1:].isdigit() is True ):
+            continue
+        entities['hashtags'].append({ 'text': h.group(), 'indices': [h.start(), h.end()] })
+
+    for s in re.finditer(r'@\S+', tweet['tweet_text']):
+        entities['user_mentions'].append({ 'screen_name': s.group(), 'indices': [s.start(), s.end()] })
+
+    created_at = ''
+    try:
+        created_at = datetime.strptime(tweet['tweet_time'] + ' +0000', '%Y-%m-%d %H:%M %z').strftime('%a %b %d %H:%M:%S %z %Y')
+    except:
+        genericErrorInfo('ERROR parsing:' + tweet['tweet_time'])
+
+    '''
+    ent_text = tweet['tweet_text']
+    ent_text = re.sub(r'[#]', '', ent_text)
+    #ent_text = ent_text.replace('#', '')
+    ents = get_entities(nlp, ent_text, base_ref_date=datetime.strptime(tweet['tweet_time'], '%Y-%m-%d %H:%M') )
+    entities['annotations'] = ents
+    '''
+
+    payload = {
+        'user': user,
+        'coordinates': None,
+        'entities': entities,
+        'id': tweet['tweetid'],
+        'full_text': tweet['tweet_text'],
+        'created_at': created_at,
+        'source': tweet['tweet_client_name'],
+        'in_reply_to_status_id': None if tweet['in_reply_to_tweetid'] == '' else tweet['in_reply_to_tweetid'],
+        'in_reply_to_user_id': None if tweet['in_reply_to_userid'] == '' else tweet['in_reply_to_userid']
+    }
+    
+    if( tweet['retweet_tweetid'] != '' ):
+        rt_entities = copy.deepcopy(entities)
+        first_mention = '' if len(rt_entities['user_mentions']) == 0 else rt_entities['user_mentions'].pop(0)['screen_name']
+        first_mention = f'RT {first_mention} '
+        
+        tweet['retweet_userid'] = fix_id(tweet['retweet_userid'])
+
+        payload['retweeted_status'] = { 
+            'id': tweet['retweet_tweetid'], 
+            'user': {'id': tweet['retweet_userid'], 'screen_name': tweet['retweet_userid']}
+        }
+        
+        full_text = tweet['tweet_text']
+        if( tweet['tweet_text'].startswith(first_mention) ):
+            full_text = tweet['tweet_text'][len(first_mention):]
+            
+            #adjust indices for rt_entities - start
+
+            for ent_type, ents in rt_entities.items():
+                for i in range(len(ents)):
+                    ents[i]['indices'] = [ ents[i]['indices'][0]-len(first_mention), ents[i]['indices'][1]-len(first_mention) ]
+            #adjust indices for rt_entities - end
+        
+        payload['retweeted_status']['full_text'] = full_text
+        payload['retweeted_status']['entities'] = rt_entities
+    
+    return payload
+
+def get_bloc_lite_twt_frm_full_twt(tweet):
+    
+    def tranfer_dets_for_stream_statuses(twt):
+        
+        #transfer details for tweets gotten from streams
+        #See: http://web.archive.org/web/20210812135100/https://docs.tweepy.org/en/stable/extended_tweets.html
+        if( 'extended_tweet' not in twt ):
+            return twt
+
+        for ky in ['full_text', 'display_text_range', 'entities', 'extended_entities']:
+            if( ky in twt['extended_tweet'] ):
+                twt[ky] = twt['extended_tweet'][ky]
+
+        return twt
+
+    if( 'id' not in tweet ):
+        return {}
+
+    tweet = tranfer_dets_for_stream_statuses(tweet)
+    payload = {
+        'id': tweet['id'],
+        'source': tweet['source'],
+        'created_at': tweet['created_at'],
+        'user': tweet['user']
+    }
+    
+    for itm in ['full_text', 'text']:
+        if( itm in tweet ):
+            payload['full_text'] = tweet[itm]
+            break
+    
+
+    if( tweet['in_reply_to_status_id'] is None ):
+        payload['in_reply_to_status_id'] = None
+        payload['in_reply_to_user_id'] = None
+    else:
+        payload['in_reply_to_status_id'] = tweet['in_reply_to_status_id']
+        payload['in_reply_to_user_id'] = tweet['in_reply_to_user_id']
+
+    
+    payload['in_reply_to_screen_name'] = tweet['in_reply_to_screen_name']
+    for itm in ['display_text_range', 'entities', 'extended_entities']:
+        if( itm in tweet ):
+            payload[itm] = tweet[itm]
+
+
+    if( 'retweeted_status' in tweet ):
+        payload['retweeted_status'] = {
+            'user': {'screen_name': tweet['retweeted_status']['user']['screen_name'], 'id': tweet['retweeted_status']['user']['id']},
+            'created_at': tweet['retweeted_status']['created_at'],
+            'id': tweet['retweeted_status']['id']
+        }
+
+        #'''
+        for itm in ['display_text_range', 'entities', 'extended_entities']:
+            if( itm in tweet ):
+                payload['retweeted_status'][itm] = tweet[itm]
+        #'''
+    
+    return payload
 
 name_mapper = {
     '2018_10/iranian' : 'Iran_1',
@@ -300,7 +561,7 @@ def get_info_ops_drivers_control_users_tweets(file_path, dataset_name, min_tweet
 
     for ou in all_driver_blocs:
         records.append({
-            'user_id': oou['output']['user_id'],
+            'user_id': ou['output']['user_id'],
             'user_class': 'driver',
             'src': 'infoOps',
             'u_bloc': ou['output']

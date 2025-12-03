@@ -1,1 +1,4 @@
-dataset
+dataset/retraining_data
+dataset/YYYY_MM
+dataset/fox8_23_dataset.ndjson.gz
+myenv

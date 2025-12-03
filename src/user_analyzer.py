@@ -1,4 +1,5 @@
 import gzip
+import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,7 +48,9 @@ def plot_histogram(ax, data, alphabet, bin_edges):
     )
 
 def plot_changes_distribution(changes_list):
-    # global bin edges for consistent scaling
+    output_dir = "results"
+    os.makedirs(output_dir, exist_ok=True)
+
     all_actions = changes_list['action_changes_list']
     all_contents = changes_list['content_changes_list']
 

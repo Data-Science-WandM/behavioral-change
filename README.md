@@ -50,8 +50,8 @@ cd behavior_change/
 
 ### 2. (Optional) Create and activate a virtual environment
 ```bash
-python3 -m venv myenv
-source myenv/bin/activate    # Linux/macOS
+python3 -m venv {env_name}
+source {env_name}/bin/activate    # Linux/macOS
 # myenv\Scripts\activate   # Windows
 ```
 
@@ -112,7 +112,7 @@ The activities of a social media account are encoded using BLOC, which represent
 
 Example 1: 
 ```bash
-python -m src.index --task user_analyzer --config config/anaylze_users_config.yaml > logs/anaylze_users_config.txt
+python -m src.index --task user_analyzer --config config/user_analyzer_config.yaml > logs/anaylze_users_config.txt
 ```
 
 Example users are provided in dataset/users. To analyze new accounts, place their tweets in a .gz file and update the configuration file at: config/user_analyzer_config.yaml

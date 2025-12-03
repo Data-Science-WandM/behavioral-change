@@ -34,11 +34,7 @@ from bloc.util import get_bloc_variant_tf_matrix
 from bloc.util import get_bloc_variant_tf_matrix
 from bloc.util import conv_tf_matrix_to_json_compliant
 from bloc.util import cosine_sim
-
-from info_ops_tk.util import get_bloc_lite_twt_frm_full_twt
-from info_ops_tk.util import get_bloc_lite_twt
-from info_ops_tk.util import parallelTask
-from info_ops_tk.util import genericErrorInfo
+from bloc.util import genericErrorInfo
 
 import matplotlib.font_manager as font_manager
 import shutil
