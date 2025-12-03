@@ -1,4 +1,4 @@
-path_to_data : "/sciclone/data10/iahewababarand/behavior_change/behavioral-change/dataset/users/celebrity_elonmusk.jsonl.gz"
+path_to_data : "dataset/users/celebrity_elonmusk.jsonl.gz"
 bloc_variant : {'type': 'folded_words', 'fold_start_count': 3, 'count_applies_to_all_char': False}
 bloc_params_tf : {'ngram': 1, 'min_df': 1, 'tf_matrix_norm': '', 'keep_tf_matrix': True, 'set_top_ngrams': True, 'top_ngrams_add_all_docs': False, 'token_pattern': '[^□⚀⚁⚂⚃⚄⚅. |()*]+|[□⚀⚁⚂⚃⚄⚅.]'}
 
