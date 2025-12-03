@@ -584,7 +584,8 @@ def main(cfg):
             comparison_method = cfg.get("comparison_method")
             distance_metric = cfg.get("distance_metric")
             n_gram = cfg.get("n_gram")
-            gen_bloc_params = cfg.get("gen_bloc_params", {})
+            filename_for_bloc_params = f"gen_bloc_params_{"segment_on_pauses" if segmentation_type == 'sets_of_four' else segmentation_type}"
+            gen_bloc_params = cfg.get(filename_for_bloc_params, {})
             min_tweets_per_user = cfg.get("min_tweets_per_user", 20)
             max_tweets_per_user = cfg.get("max_tweets_per_user", 5000)
             all_bloc_symbols = get_default_symbols()

@@ -9,8 +9,7 @@ distance_metric: "cosine-similarity"
 # if you are using sets_of_four segmentation, specify the n-gram size here
 n_gram: 4
 
-#if you are using segment_on_pauses segmentation, use the following parameter, otherwise comment it out
-gen_bloc_params : {
+gen_bloc_params_segment_on_pauses : {
   'blank_mark': 60, 
   'bloc_alphabets': ['action', 'content_syntactic'], 
   'fold_start_count': 10, 
@@ -22,15 +21,14 @@ gen_bloc_params : {
   'tweet_order': 'sorted'
 }
 
-#if you are using week_number segmentation, use the following parameter, otherwise comment it out
-# gen_bloc_params :  {
-#   'blank_mark': 60, 
-#   'bloc_alphabets': ['action', 'content_syntactic'], 
-#   'fold_start_count': 10,  
-#   'keep_bloc_segments': True, 
-#   'keep_tweets': True, 
-#   'segmentation_type': 'week_number', #['week_number', 'day_of_year_bin', 'yyyy-mm-dd', 'segment_on_pauses']
-#   'sort_action_words': False, 
-#   'tweet_order': 'sorted'
-# }
+gen_bloc_params_week_number :  {
+  'blank_mark': 60, 
+  'bloc_alphabets': ['action', 'content_syntactic'], 
+  'fold_start_count': 10,  
+  'keep_bloc_segments': True, 
+  'keep_tweets': True, 
+  'segmentation_type': 'week_number', #['week_number', 'day_of_year_bin', 'yyyy-mm-dd', 'segment_on_pauses']
+  'sort_action_words': False, 
+  'tweet_order': 'sorted'
+}
 

@@ -119,9 +119,9 @@ Example users are provided in dataset/users. To analyze new accounts, place thei
 
 ### Available change settings:
 
-- **Segmentation method:** *pauses*, *weeks*, *sets of k*  
+- **Segmentation method:** *segment_on_pauses*, *sets_of_four*, *week_number*
 - **Segment selection method:** *adjacent*, *cumulative*  
-- **Distance measure:** *cosine*, *compression* distance
+- **Distance measure:** *osine-similarity*, *compression* 
 
 
 
